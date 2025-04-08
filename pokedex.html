@@ -6,123 +6,108 @@
   <title>Pokédex</title>
   <link rel="stylesheet" href="pokedex.css" />
   <style>
-    
     body {
       margin: 0;
       padding: 0;
       background-color: #f00;
       font-family: sans-serif;
     }
+    #pokemonList {
+      list-style: none;
+      padding: 0;
+      margin: 10px;
+      color: white;
+    }
+    #pokemonList li {
+      padding: 5px;
+      cursor: pointer;
+    }
+    #pokemonList li:hover {
+      background-color: #800;
+    }
+    input[type="text"] {
+      margin: 10px;
+      padding: 5px;
+      width: 200px;
+    }
   </style>
 </head>
-<script>
-  const pokemonList = ['bulbasaur', 'charmander', 'squirtle', 'pikachu', 'jigglypuff', 'meowth', 'psyduck', 'snorlax', 'eevee', 'mew'];
-  const listContainer = document.createElement('ul');
-  listContainer.id = 'pokemonList';
-  
-  pokemonList.forEach(name => {
-    const li = document.createElement('li');
-    li.textContent = name;
-    li.style.cursor = 'pointer';
-    li.onclick = () => loadPokemon(name);
-    listContainer.appendChild(li);
-  });
-  
-  document.getElementById('right').prepend(listContainer);
-  
-  async function loadPokemon(name) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-    const data = await res.json();
-  
-    document.getElementById('pokemonName').textContent = data.name;
-    document.getElementById('pokemonTypes').textContent = data.types.map(t => t.type.name).join(', ');
-    document.getElementById('pokemonHeight').textContent = data.height / 10;
-    document.getElementById('pokemonWeight').textContent = data.weight / 10;
-    document.getElementById('pokemonSkills').textContent = data.abilities.map(a => a.ability.name).join(', ');
-  
-    document.getElementById('pokemonImage').src = data.sprites.front_default;
-  
-    // WhatsApp template gerado no console
-    const msg = `*Pokemax Pokedex*\n\n*Nome:* ${data.name}\n*Habilidades:* ${data.abilities.map(a => a.ability.name).join(', ')}`;
-    console.log('Copie e cole no WhatsApp:\n\n' + msg);
-  }
-  
-  // Campo de pesquisa
-  const input = document.createElement('input');
-  input.placeholder = 'Buscar Pokémon...';
-  input.style.marginBottom = '10px';
-  input.onkeypress = (e) => {
-    if (e.key === 'Enter') loadPokemon(e.target.value.toLowerCase());
-  };
-  document.getElementById('right').prepend(input);
-  </script>
-  
 <body>
   <div id="pokedex">
     <div id="left">
-      <div id="logo"></div>
-      <div id="bg_curve1_left"></div>
-      <div id="bg_curve2_left"></div>
-      <div id="curve1_left">
-        <div id="buttonGlass">
-          <div id="reflect"></div>
-        </div>
-        <div id="miniButtonGlass1"></div>
-        <div id="miniButtonGlass2"></div>
-        <div id="miniButtonGlass3"></div>
-      </div>
-      <div id="curve2_left">
-        <div id="junction">
-          <div id="junction1"></div>
-          <div id="junction2"></div>
-        </div>
-      </div>
       <div id="screen">
-        <div id="topPicture">
-          <div id="buttontopPicture1"></div>
-          <div id="buttontopPicture2"></div>
-        </div>
         <div id="picture">
           <img id="pokemonImage" title="Click e altere imagem" height="170" />
-        </div>
-        <div id="buttonbottomPicture"></div>
-        <div id="speakers">
-          <div class="sp"></div>
-          <div class="sp"></div>
-          <div class="sp"></div>
-          <div class="sp"></div>
-        </div>
-      </div>
-      <div id="bigbluebutton"></div>
-      <div id="barbutton1"></div>
-      <div id="barbutton2"></div>
-      <div id="cross">
-        <div id="leftcross">
-          <div id="leftT"></div>
-        </div>
-        <div id="topcross">
-          <div id="upT"></div>
-        </div>
-        <div id="rightcross">
-          <div id="rightT"></div>
-        </div>
-        <div id="midcross">
-          <div id="midCircle"></div>
-        </div>
-        <div id="botcross">
-          <div id="downT"></div>
         </div>
       </div>
     </div>
     <div id="right">
+      <input type="text" placeholder="Buscar Pokémon..." id="searchBox" />
+      <ul id="pokemonList"></ul>
       <div id="stats">
         <strong>Name:</strong> <span id="pokemonName"></span><br />
         <strong>Type:</strong> <span id="pokemonTypes"></span><br />
         <strong>Height:</strong> <span id="pokemonHeight"></span>m<br />
         <strong>Weight:</strong> <span id="pokemonWeight"></span>kg<br />
-        <strong>Skill:</strong> <span id="pokemonSkills"></span>...
+        <strong>Abilities:</strong> <span id="pokemonSkills"></span><br />
+        <strong>Evolution:</strong> <span id="pokemonEvolution"></span>
       </div>
-      <div id="blueButtons1">
-        <div class="blueButton"></div>
-        <div class="blueButton"></div>
-        <div class
+    </div>
+  </div>
+
+  <script>
+    const pokemonList = ['bulbasaur', 'charmander', 'squirtle', 'pikachu', 'jigglypuff', 'meowth', 'psyduck', 'snorlax', 'eevee', 'mew'];
+    const listContainer = document.getElementById('pokemonList');
+
+    pokemonList.forEach(name => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      li.onclick = () => loadPokemon(name);
+      listContainer.appendChild(li);
+    });
+
+    document.getElementById('searchBox').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        loadPokemon(e.target.value.toLowerCase());
+      }
+    });
+
+    async function loadPokemon(name) {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+        const data = await res.json();
+
+        document.getElementById('pokemonName').textContent = data.name;
+        document.getElementById('pokemonTypes').textContent = data.types.map(t => t.type.name).join(', ');
+        document.getElementById('pokemonHeight').textContent = data.height / 10;
+        document.getElementById('pokemonWeight').textContent = data.weight / 10;
+        document.getElementById('pokemonSkills').textContent = data.abilities.map(a => a.ability.name).join(', ');
+        document.getElementById('pokemonImage').src = data.sprites.front_default;
+
+        const speciesRes = await fetch(data.species.url);
+        const speciesData = await speciesRes.json();
+
+        if (speciesData.evolution_chain) {
+          const evoRes = await fetch(speciesData.evolution_chain.url);
+          const evoData = await evoRes.json();
+
+          let evoNames = [];
+          let evo = evoData.chain;
+
+          do {
+            evoNames.push(evo.species.name);
+            evo = evo.evolves_to[0];
+          } while (evo && evo.species);
+
+          document.getElementById('pokemonEvolution').textContent = evoNames.join(' ➔ ');
+        }
+
+        const msg = `*Pokemax Pokedex*\n\n*Nome:* ${data.name}\n*Habilidades:* ${data.abilities.map(a => a.ability.name).join(', ')}`;
+        console.log('Copie e cole no WhatsApp:\n\n' + msg);
+      } catch (err) {
+        alert('Pokémon não encontrado.');
+      }
+    }
+  </script>
+</body>
+</html>
