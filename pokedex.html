@@ -6,7 +6,7 @@
   <title>Pokédex</title>
   <link rel="stylesheet" href="pokedex.css" />
   <style>
-    /* Estilos básicos de exemplo. Remova se você já tem um CSS separado */
+    
     body {
       margin: 0;
       padding: 0;
@@ -15,6 +15,48 @@
     }
   </style>
 </head>
+<script>
+  const pokemonList = ['bulbasaur', 'charmander', 'squirtle', 'pikachu', 'jigglypuff', 'meowth', 'psyduck', 'snorlax', 'eevee', 'mew'];
+  const listContainer = document.createElement('ul');
+  listContainer.id = 'pokemonList';
+  
+  pokemonList.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.style.cursor = 'pointer';
+    li.onclick = () => loadPokemon(name);
+    listContainer.appendChild(li);
+  });
+  
+  document.getElementById('right').prepend(listContainer);
+  
+  async function loadPokemon(name) {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+    const data = await res.json();
+  
+    document.getElementById('pokemonName').textContent = data.name;
+    document.getElementById('pokemonTypes').textContent = data.types.map(t => t.type.name).join(', ');
+    document.getElementById('pokemonHeight').textContent = data.height / 10;
+    document.getElementById('pokemonWeight').textContent = data.weight / 10;
+    document.getElementById('pokemonSkills').textContent = data.abilities.map(a => a.ability.name).join(', ');
+  
+    document.getElementById('pokemonImage').src = data.sprites.front_default;
+  
+    // WhatsApp template gerado no console
+    const msg = `*Pokemax Pokedex*\n\n*Nome:* ${data.name}\n*Habilidades:* ${data.abilities.map(a => a.ability.name).join(', ')}`;
+    console.log('Copie e cole no WhatsApp:\n\n' + msg);
+  }
+  
+  // Campo de pesquisa
+  const input = document.createElement('input');
+  input.placeholder = 'Buscar Pokémon...';
+  input.style.marginBottom = '10px';
+  input.onkeypress = (e) => {
+    if (e.key === 'Enter') loadPokemon(e.target.value.toLowerCase());
+  };
+  document.getElementById('right').prepend(input);
+  </script>
+  
 <body>
   <div id="pokedex">
     <div id="left">
